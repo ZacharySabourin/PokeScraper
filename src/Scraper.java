@@ -69,11 +69,18 @@ public class Scraper
 		{			
 			nextHref = anchors.get(i).getHrefAttribute();
 
-			if(!nextHref.contentEquals(previousHref) && nextHref.contains("_(Pok%C3%A9mon)"))
+			if(!nextHref.equals(previousHref) && nextHref.contains("_(Pok%C3%A9mon)"))
 				pokedexPages.add(nextHref);
 		
 			previousHref = nextHref;	
 		}	
+		
+		System.out.println(pokedexPages.size() + " RETRIEVED");
+	}
+	
+	private void extractPokemonInfo()
+	{
+		
 	}
 	
 //	private class ScraperThread implements Runnable
