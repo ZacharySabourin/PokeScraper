@@ -18,7 +18,7 @@ public class DbManager
 		dbConnection = null;
 	}
 	
-	public void establishConnection() throws SQLException
+	public void establishConnection() throws SQLException, ClassNotFoundException
 	{
 		dbConnection = DriverManager.getConnection(connectionURL, username, password);
 	}
