@@ -47,8 +47,7 @@ public class Scraper
 				href = href.replace("/us/pokedex/", "");
 				pokemonNames.add(href);
 			}
-				
-		
+						
 		System.out.println(pokemonNames.size() + " RETRIEVED");
 	}
 	
@@ -59,8 +58,11 @@ public class Scraper
 		for(String name : pokemonNames)
 		{
 			Pokemon pokemon = scrapePokemonInfo(name);
-			pokemonList.add(pokemon);
-			//System.out.println(pokemon.getName() + " ADDED");
+			if(pokemonIsValid(pokemon)) 
+			{
+				pokemonList.add(pokemon);				
+				System.out.println(pokemon.getName() + " ADDED");
+			}				
 		}
 		
 		return pokemonList;
@@ -73,20 +75,22 @@ public class Scraper
 		String nameAndNoXPath = "//div[@class='pokedex-pokemon-pagination-title']";			
 		String nameAndNo = scrapeSingleElement(dexPage, nameAndNoXPath);
 		
-		String[] splitNameAndNo = nameAndNo.split(" #", 2);	
+		String[] splitNameAndNo = nameAndNo.split(" #", 2);
 		
 		String pokemonName = splitNameAndNo[0];
 		int pokemonDexNo = Integer.parseInt(splitNameAndNo[1]);
+				
+		String heightXPath = "//div[@class='column-7']/ul[1]/li[1]/span[@class='attribute-value']";
+		String pokemonHeight = scrapeSingleElement(dexPage, heightXPath);
 		
-		String descriptionsXPath = "//div[@class='version-descriptions active']";
-		List<String> pokemonDescriptions = scrapeMultipleElements(dexPage, descriptionsXPath);
-		
-		List<HtmlElement> attributeColumnOne = dexPage.getByXPath("//div[@class='column-7']/ul/li/span[@class='attribute-value']");			
-		for(HtmlElement value : attributeColumnOne)
-			System.out.println(value.asText());//height, weight, gender(s)		
+		String weightXPath = "//div[@class='column-7']/ul[1]/li[2]/span[@class='attribute-value']";
+		String pokemonWeight = scrapeSingleElement(dexPage, weightXPath);
 		
 		String categoryXPath = "//div[@class='column-7 push-7']/ul/li/span[@class='attribute-value']";
 		String pokemonCategory = scrapeSingleElement(dexPage, categoryXPath);
+		
+		String genderXPath = "//div[@class='column-7']/ul/li[3]/span[@class='attribute-value']";
+		List<String> pokemonGenders = scrapeGenderElements(dexPage, genderXPath);
 		
 		String abilitiesXPath = "//ul[@class='attribute-list']";
 		List<String> pokemonAbilities = scrapeMultipleElements(dexPage, abilitiesXPath);
@@ -97,7 +101,21 @@ public class Scraper
 		String weaknessesXPath = "//div[@class='dtm-weaknesses']/ul/li/a";
 		List<String> pokemonWeaknesses = scrapeMultipleElements(dexPage, weaknessesXPath);
 		
+		String descriptionsXPath = "//div[@class='version-descriptions active']";
+		List<String> pokemonDescriptions = scrapeMultipleElements(dexPage, descriptionsXPath);
+		
 		Pokemon pokemon = new Pokemon();
+		
+		pokemon.setNationalDexNo(pokemonDexNo);
+		pokemon.setName(pokemonName);
+		pokemon.setHeight(pokemonHeight);
+		pokemon.setWeight(pokemonWeight);
+		pokemon.setCategory(pokemonCategory);
+		pokemon.setGenders(pokemonGenders);
+		pokemon.setAbilities(pokemonAbilities);
+		pokemon.setTypes(pokemonTypes);
+		pokemon.setWeaknesses(pokemonWeaknesses);
+		pokemon.setDescriptions(pokemonDescriptions);
 		
 		return pokemon;
 	}
@@ -117,5 +135,40 @@ public class Scraper
 	{
 		HtmlElement infoElement = page.getFirstByXPath(xPath);
 		return infoElement.asText();
+	}
+	
+	private List<String> scrapeGenderElements(HtmlPage page, String xPath)
+	{
+		List<String> pokemonGenderInfo = new ArrayList<String>();
+		
+		List<HtmlElement> genderElements = page.getByXPath(xPath);
+		for(HtmlElement element : genderElements)
+		{
+			if(element.getFirstByXPath("//i[@class='icon icon_male_symbol']") != null)
+				pokemonGenderInfo.add("Male");
+			
+			if(element.getFirstByXPath("//i[@class='icon icon_female_symbol']") != null)
+				pokemonGenderInfo.add("Female");
+			
+			if(element.asText().equalsIgnoreCase("Unknown"))
+				pokemonGenderInfo.add("Unknown");
+		}		
+		
+		return pokemonGenderInfo;
+	}
+	
+	private boolean pokemonIsValid(Pokemon pokemon)
+	{
+		return 
+			(pokemon.getNationalDexNo() != 0) &&
+			(pokemon.getName() != null) &&
+			(pokemon.getHeight() != null) &&
+			(pokemon.getWeight() != null) &&
+			(pokemon.getCategory() != null) &&
+			(pokemon.getGenders() != null) &&
+			(pokemon.getAbilities() != null) &&
+			(pokemon.getTypes() != null) &&
+			(pokemon.getWeaknesses() != null) &&
+			(pokemon.getDescription() != null);
 	}
 }

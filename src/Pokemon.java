@@ -27,6 +27,29 @@ public class Pokemon
 		this.descriptions = null;
 	}
 	
+	@Override
+	public String toString()
+	{
+		String ret = nationalDexNo + " :: " + name + " :: " + height + " :: " + weight + " :: " + category;		
+		
+		for(String gender : genders)
+			ret += (" :: " + gender);
+		
+		for(String ability : abilities)
+			ret += (" :: " + ability);
+		
+		for(String type : types)
+			ret += (" :: " + type);
+		
+		for(String weak : weaknesses)
+			ret += (" :: " + weak);
+		
+		for(String description : descriptions)
+			ret += ("\n :: " + description);
+		
+		return ret;
+	}
+	
 	public boolean hasTwoTypes()
 	{
 		return (types.size() > 1);
