@@ -13,18 +13,20 @@ public class Pokemon
 	private List<String> weaknesses;
 	private List<String> descriptions;
 	
-	public Pokemon()
+	public Pokemon(int dexNo, String name, String height, String weight,
+		String category, List<String> genders, List<String> abilities, 
+		List<String> types, List<String> weaknesses, List<String> descriptions)
 	{
-		this.nationalDexNo = 0;
-		this.name = null;
-		this.height = null;
-		this.weight = null;
-		this.category = null;
-		this.genders = null;
-		this.abilities = null;
-		this.types = null;
-		this.weaknesses = null;
-		this.descriptions = null;
+		this.nationalDexNo = dexNo;
+		this.name = name;
+		this.height = height;
+		this.weight = weight;
+		this.category = category;
+		this.genders = genders;
+		this.abilities = abilities;
+		this.types = types;
+		this.weaknesses = weaknesses;
+		this.descriptions = descriptions;
 	}
 	
 	@Override
@@ -50,14 +52,24 @@ public class Pokemon
 		return ret;
 	}
 	
+	public boolean isValid()
+	{
+		return 
+			(nationalDexNo != 0) &&
+			(name != null) &&
+			(height != null) &&
+			(weight != null) &&
+			(category != null) &&
+			(genders != null) &&
+			(abilities != null) &&
+			(types != null) &&
+			(weaknesses != null) &&
+			(descriptions != null);
+	}
+	
 	public boolean hasTwoTypes()
 	{
 		return (types.size() > 1);
-	}
-	
-	public void setNationalDexNo(int number)
-	{
-		this.nationalDexNo = number;
 	}
 	
 	public int getNationalDexNo()
@@ -65,19 +77,9 @@ public class Pokemon
 		return nationalDexNo;
 	}
 	
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
 	public String getName()
 	{
 		return this.name;
-	}
-	
-	public void setHeight(String height)
-	{
-		this.height = height;
 	}
 	
 	public String getHeight()
@@ -85,19 +87,9 @@ public class Pokemon
 		return this.height;
 	}
 	
-	public void setWeight(String weight)
-	{
-		this.weight = weight;
-	}
-	
 	public String getWeight()
 	{
 		return this.weight;
-	}
-	
-	public void setCategory(String category)
-	{
-		this.category = category;
 	}
 	
 	public String getCategory()
@@ -105,19 +97,9 @@ public class Pokemon
 		return this.category;
 	}
 	
-	public void setGenders(List<String> genders)
-	{
-		this.genders = genders;
-	}
-	
 	public List<String> getGenders()
 	{
 		return this.genders;
-	}
-	
-	public void setAbilities(List<String> abilities)
-	{
-		this.abilities = abilities;
 	}
 	
 	public List<String> getAbilities()
@@ -125,19 +107,9 @@ public class Pokemon
 		return this.abilities;
 	}
 	
-	public void setTypes(List<String> types)
-	{
-		this.types = types;
-	}
-	
 	public List<String> getTypes()
 	{
 		return this.types;
-	}
-	
-	public void setWeaknesses(List<String> weaknesses)
-	{
-		this.weaknesses = weaknesses;
 	}
 	
 	public List<String> getWeaknesses()
@@ -145,12 +117,7 @@ public class Pokemon
 		return this.weaknesses;
 	}
 	
-	public void setDescriptions(List<String> descriptions)
-	{
-		this.descriptions = descriptions;
-	}
-	
-	public List<String> getDescription()
+	public List<String> getDescriptions()
 	{
 		return this.descriptions;
 	}
