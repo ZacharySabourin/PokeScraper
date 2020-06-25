@@ -8,13 +8,13 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 public class Pokedex 
 {
 	private Deque<Pokemon> pokemonList;
-	private Scraper scraper;
+	private PokeScraper pokeScraper;
 	private DbManager dbManager;
 	
 	public Pokedex()
 	{
 		pokemonList = new ArrayDeque<Pokemon>(890);
-		scraper = new Scraper();
+		pokeScraper = new PokeScraper();
 		dbManager = new DbManager();
 	}
 	
@@ -26,8 +26,8 @@ public class Pokedex
 	
 	public void loadPokemonIntoDex() throws FailingHttpStatusCodeException, MalformedURLException, IOException, InterruptedException
 	{		
-//		pokemonList = scraper.scrapeIntoDeque();
-//		for(Pokemon pokemon : pokemonList)
-//			System.out.println(pokemon.getNationalDexNo() + " : " + pokemon.getName());
+		pokemonList = pokeScraper.extractEveryPokemonInfo();
+		for(Pokemon pokemon : pokemonList)
+			System.out.println(pokemon.getNationalDexNo() + " : " + pokemon.getName());
 	}
 }
