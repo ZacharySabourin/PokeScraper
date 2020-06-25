@@ -15,80 +15,88 @@ public class Scraper
 {
 	private WebClient client;	
 	private String startUrl;
-	private Deque<String> paths;
+	private Deque<String> pokemonPaths;
 	
 	public Scraper()
 	{
 		this.client = new WebClient();
 		this.startUrl = "https://www.pokemon.com/us/pokedex/";
-		this.paths = new ArrayDeque<String>(890);
+		this.pokemonPaths = new ArrayDeque<String>(890);
 	}
 	
-	public void scrapeIntoList(Deque<Pokemon> pokemonList) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	public void scrape() throws FailingHttpStatusCodeException, MalformedURLException, IOException
 	{		
 		client.getOptions().setCssEnabled(false);
-		client.getOptions().setJavaScriptEnabled(false);
+		client.getOptions().setJavaScriptEnabled(false);		
 		
-		extractURLPaths();		
+		extractEveryPokemonInfo();
 		
-		while(!paths.isEmpty())		
-			pokemonList.offer(scrapePokemonInfo(paths.poll()));										
+		client.close();
 	}
 	
-	private void extractURLPaths() throws FailingHttpStatusCodeException, MalformedURLException, IOException
-	{	
-		HtmlPage startPage = client.getPage(startUrl);	
-
-		List<HtmlAnchor> anchors = startPage.getByXPath("//a");	
-		for(HtmlAnchor anchor : anchors)
-		{
-			if(anchor.asText().contains(" - "))
-			{
-				String href = anchor.getHrefAttribute();
-				href = href.replace("/us/pokedex/", "");
-				paths.offer(href);
-			}
-		}
-		
-		System.out.println("RETRIEVED : " + paths.size() + "\n");
-	}
-	
-	private Pokemon scrapePokemonInfo(String path) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	private Deque<Pokemon> extractEveryPokemonInfo() throws FailingHttpStatusCodeException, MalformedURLException, IOException
 	{
-		HtmlPage dexPage = client.getPage(startUrl + path);
+		getAllPokemonPaths();
+		
+		Deque<Pokemon> pokemonList = new ArrayDeque<Pokemon>(890);
+		
+		while(!pokemonPaths.isEmpty())
+		{
+			String pokemonName = pokemonPaths.poll();
+			Pokemon pokemon = extractSinglePokemonInfo(pokemonName);
+			pokemonList.offer(pokemon);
+			System.out.println("ADDED : " + pokemon.getName());
+		}	
+		
+		return pokemonList;
+	}
+	
+	private void getAllPokemonPaths() throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	{
+		PokemonPage startPage = new PokemonPage(startUrl);	
+		String hrefXPath = "//a";
+		
+		List<String> hrefs = startPage.extractAnchorsAsText(hrefXPath);
+		for(String href : hrefs)
+			pokemonPaths.offer(href);		
+	}
+	
+	private Pokemon extractSinglePokemonInfo(String path) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+	{
+		PokemonPage pokemonPage = new PokemonPage(startUrl + path);
 		
 		String nameAndNoXPath = "//div[@class='pokedex-pokemon-pagination-title']";			
-		String nameAndNo = scrapeSingleElement(dexPage, nameAndNoXPath);
-		
+		String nameAndNo = pokemonPage.extractSingleAsText(nameAndNoXPath);
+				
 		String[] splitNameAndNo = nameAndNo.split(" #", 2);
 		
 		String pokemonName = splitNameAndNo[0];
 		int pokemonDexNo = Integer.parseInt(splitNameAndNo[1]);
 				
-		String heightXPath = "//div[@class='column-7']/ul[1]/li[1]/span[@class='attribute-value']";
-		String pokemonHeight = scrapeSingleElement(dexPage, heightXPath);
+		String heightXPath = "//div[@class='column-7']/ul[1]/li[1]/span[@class='attribute-value']";	
+		String pokemonHeight = pokemonPage.extractSingleAsText(heightXPath);
 		
 		String weightXPath = "//div[@class='column-7']/ul[1]/li[2]/span[@class='attribute-value']";
-		String pokemonWeight = scrapeSingleElement(dexPage, weightXPath);
+		String pokemonWeight = pokemonPage.extractSingleAsText(weightXPath);
 		
 		String categoryXPath = "//div[@class='column-7 push-7']/ul/li/span[@class='attribute-value']";
-		String pokemonCategory = scrapeSingleElement(dexPage, categoryXPath);
+		String pokemonCategory = pokemonPage.extractSingleAsText(categoryXPath);
 		
 		String genderXPath = "//div[@class='column-7']/ul/li[3]/span[@class='attribute-value']";
-		List<String> pokemonGenders = scrapeGenderElements(dexPage, genderXPath);
+		List<String> pokemonGenders = pokemonPage.scrapeGenderElements(genderXPath);
 		
 		String abilitiesXPath = "//ul[@class='attribute-list']";
-		List<String> pokemonAbilities = scrapeMultipleElements(dexPage, abilitiesXPath);
+		List<String> pokemonAbilities = pokemonPage.extractMultipleAsText(abilitiesXPath);
 		
 		String typesXPath = "//div[@class='dtm-type']//a";
-		List<String> pokemonTypes = scrapeMultipleElements(dexPage, typesXPath);
+		List<String> pokemonTypes = pokemonPage.extractMultipleAsText(typesXPath);
 		
 		String weaknessesXPath = "//div[@class='dtm-weaknesses']/ul/li/a";
-		List<String> pokemonWeaknesses = scrapeMultipleElements(dexPage, weaknessesXPath);
+		List<String> pokemonWeaknesses = pokemonPage.extractMultipleAsText(weaknessesXPath);
 		
 		String descriptionsXPath = "//div[@class='version-descriptions active']";
-		List<String> pokemonDescriptions = scrapeMultipleElements(dexPage, descriptionsXPath);
-		
+		List<String> pokemonDescriptions = pokemonPage.extractMultipleAsText(descriptionsXPath);
+				
 		Pokemon pokemon = new Pokemon(
 			pokemonDexNo, 
 			pokemonName, 
@@ -104,41 +112,88 @@ public class Scraper
 		
 		return pokemon;
 	}
-	
-	private List<String> scrapeMultipleElements(HtmlPage page, String xPath)
+			
+	private class PokemonPage 
 	{
-		List<String> pokemonInfo = new ArrayList<String>(10);
-		
-		List<HtmlElement> infoElements = page.getByXPath(xPath); 
-		for(HtmlElement element : infoElements)
-			pokemonInfo.add(element.asText());
-		
-		return pokemonInfo;
-	}
-	
-	private String scrapeSingleElement(HtmlPage page, String xPath)
-	{
-		HtmlElement infoElement = page.getFirstByXPath(xPath);
-		return infoElement.asText();
-	}
-	
-	private List<String> scrapeGenderElements(HtmlPage page, String xPath)
-	{
-		List<String> pokemonGenderInfo = new ArrayList<String>(2);
-		
-		List<HtmlElement> genderElements = page.getByXPath(xPath);
-		for(HtmlElement element : genderElements)
+		private HtmlPage page;
+				
+		public PokemonPage(String url) throws FailingHttpStatusCodeException, MalformedURLException, IOException
 		{
-			if(element.getFirstByXPath("//i[@class='icon icon_male_symbol']") != null)
-				pokemonGenderInfo.add("Male");
-			
-			if(element.getFirstByXPath("//i[@class='icon icon_female_symbol']") != null)
-				pokemonGenderInfo.add("Female");
-			
-			if(element.asText().equalsIgnoreCase("Unknown"))
-				pokemonGenderInfo.add("Unknown");
-		}	
+			this.page = client.getPage(url);
+		}
 		
-		return pokemonGenderInfo;
-	}	
+		private List<String> extractAnchorsAsText(String xPath)
+		{
+			List<String> hrefs = new ArrayList<String>();
+			
+			List<HtmlAnchor> anchors = scrapeMultipleAnchors(xPath);
+			
+			for(HtmlAnchor anchor : anchors)
+			{
+				String anchorText = anchor.asText();
+				if(anchorText.contains(" - "))
+				{
+					String href = anchor.getHrefAttribute();
+					href = href.replace("/us/pokedex/", "");
+					hrefs.add(href);
+				}				
+			}				
+			
+			return hrefs;
+		}
+		
+		private List<HtmlAnchor> scrapeMultipleAnchors(String xPath)
+		{
+			return page.getByXPath(xPath);
+		}
+				
+		private List<String> extractMultipleAsText(String xPath)
+		{					
+			List<String> stringList = new ArrayList<String>();
+			
+			List<HtmlElement> elements = scrapeMultipleElements(xPath);
+			
+			for(HtmlElement element : elements)			
+				stringList.add(element.asText());
+									
+			return stringList;
+		}
+		
+		private String extractSingleAsText(String xPath)
+		{
+			HtmlElement element = scrapeSingleElement(xPath);
+			return element.asText();
+		}
+		
+		private List<HtmlElement> scrapeMultipleElements(String xPath)
+		{				
+			return page.getByXPath(xPath);
+		}
+			
+		private HtmlElement scrapeSingleElement(String xPath)
+		{
+			return page.getFirstByXPath(xPath);
+		}
+		
+		private List<String> scrapeGenderElements(String xPath)
+		{
+			List<String> pokemonGenderInfo = new ArrayList<String>(2);
+				
+			List<HtmlElement> elements = scrapeMultipleElements(xPath);
+			
+			for(HtmlElement element : elements)
+			{
+				if(element.getFirstByXPath("//i[@class='icon icon_male_symbol']") != null)
+					pokemonGenderInfo.add("Male");
+				
+				if(element.getFirstByXPath("//i[@class='icon icon_female_symbol']") != null)
+					pokemonGenderInfo.add("Female");
+				
+				if(element.asText().equalsIgnoreCase("Unknown"))
+					pokemonGenderInfo.add("Unknown");
+			}	
+			
+			return pokemonGenderInfo;
+		}	
+	}
 }

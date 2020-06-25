@@ -26,8 +26,8 @@ public class Pokedex
 	
 	public void loadPokemonIntoDex() throws FailingHttpStatusCodeException, MalformedURLException, IOException, InterruptedException
 	{		
-		scraper.scrapeIntoList(pokemonList);
-		for(Pokemon pokemon : pokemonList)
-			System.out.println(pokemon.getNationalDexNo() + " : " + pokemon.getName());
+//		pokemonList = scraper.scrapeIntoDeque();
+//		for(Pokemon pokemon : pokemonList)
+//			System.out.println(pokemon.getNationalDexNo() + " : " + pokemon.getName());
 	}
 }

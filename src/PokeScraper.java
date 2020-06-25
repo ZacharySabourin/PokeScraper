@@ -3,13 +3,13 @@ public class PokeScraper
 {
 	public static void main(String[] args) 
 	{
-		Pokedex pokedex = new Pokedex();
+		Scraper scraper = new Scraper();
 		
 		try
 		{
 			long start = System.currentTimeMillis();
 			
-			pokedex.loadPokemonIntoDex();
+			scraper.scrape();
 			
 			long end = System.currentTimeMillis();
 			long elapsedTime = end - start;
