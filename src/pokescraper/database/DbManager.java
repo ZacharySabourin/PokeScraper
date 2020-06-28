@@ -1,4 +1,5 @@
 package pokescraper.database;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -36,8 +37,20 @@ public class DbManager
 	
 	public void write(String query) throws SQLException
 	{
-		Statement statement = dbConnection.createStatement();
-		statement.executeQuery(query);
-		dbConnection.commit();
+		try
+		{
+			Statement statement = dbConnection.createStatement();
+			statement.executeQuery(query);
+			dbConnection.commit();
+		}
+		catch(SQLException ex)
+		{
+			
+		}
+		finally
+		{
+			if(!isClosed())
+				closeConnection();
+		}		
 	}
 }

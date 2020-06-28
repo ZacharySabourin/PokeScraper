@@ -1,4 +1,5 @@
 package pokescraper.pokedex;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayDeque;
@@ -11,13 +12,13 @@ import pokescraper.web.WebScraper;
 public class Pokedex 
 {
 	private Deque<Pokemon> pokemonList;
-	private WebScraper pokeScraper;
+	private WebScraper scraper;
 	//private DbManager dbManager;
 	
 	public Pokedex()
 	{
 		pokemonList = new ArrayDeque<Pokemon>(890);
-		pokeScraper = new WebScraper();
+		scraper = new WebScraper();
 		//dbManager = new DbManager();
 	}
 	
@@ -29,8 +30,6 @@ public class Pokedex
 	
 	public void loadPokemonIntoDex() throws FailingHttpStatusCodeException, MalformedURLException, IOException, InterruptedException
 	{		
-		//pokemonList = pokeScraper.extractEveryPokemonInfo();
-		for(Pokemon pokemon : pokemonList)
-			System.out.println(pokemon.getNationalDexNo() + " : " + pokemon.getName());
+		pokemonList = scraper.getAllPokemonfromWeb();
 	}
 }

@@ -6,16 +6,16 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 import pokescraper.web.WebScraper;
 
-public class Process {
-
+public class Process 
+{
 	public static void main(String[] args)
 	{
 		try 
 		{
 			long start = System.currentTimeMillis();
 			
-			WebScraper pokeScraper = new WebScraper();
-			pokeScraper.getAllPokemonfromWeb();
+			WebScraper scraper = new WebScraper();
+			scraper.getAllPokemonfromWeb();
 			
 			long end = System.currentTimeMillis();
 			long elapsedTime = end - start;
@@ -26,5 +26,4 @@ public class Process {
 			e.printStackTrace();
 		}
 	}
-
 }

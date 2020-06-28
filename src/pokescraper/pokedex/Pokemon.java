@@ -1,4 +1,5 @@
 package pokescraper.pokedex;
+
 import java.util.List;
 
 public class Pokemon 
@@ -31,24 +32,56 @@ public class Pokemon
 	@Override
 	public String toString()
 	{
-		String ret = nationalDexNo + " :: " + name + " :: " + height + " :: " + weight + " :: " + category;		
+		StringBuffer buffer = new StringBuffer(250);
+		buffer.append(nationalDexNo);
+		buffer.append(" - ");
+		buffer.append(name);
+		buffer.append("\n");
+		buffer.append(height);
+		buffer.append(" - ");
+		buffer.append(weight);
+		buffer.append(" - ");
+		buffer.append(category);		
 		
 		for(String gender : genders)
-			ret += (" :: " + gender);
+		{
+			buffer.append(" - ");
+			buffer.append(gender);
+		}
+		
+		buffer.append("/n");
 		
 		for(String ability : abilities)
-			ret += (" :: " + ability);
+		{			
+			buffer.append(ability);
+			buffer.append(" - ");
+		}
+			
+		buffer.append("/n");
 		
 		for(String type : types)
-			ret += (" :: " + type);
+		{
+			buffer.append(type);
+			buffer.append(" - ");
+		}
 		
-		for(String weak : weaknesses)
-			ret += (" :: " + weak);
+		buffer.append("\n");
+		
+		for(String weakness : weaknesses)
+		{
+			buffer.append(weakness);
+			buffer.append(" - ");
+		}
+			
+		buffer.append("\n");
 		
 		for(String description : descriptions)
-			ret += ("\n :: " + description);
-		
-		return ret;
+		{
+			buffer.append(description);
+			buffer.append("\n");
+		}
+				
+		return buffer.toString();
 	}
 	
 	public boolean isValid()
