@@ -47,6 +47,6 @@ public class WebPage
 	
 	protected boolean elementIsValid(String xPath)
 	{			
-		return getSingleElement(xPath) == null;
+		return getSingleElement(xPath) != null;
 	}
 }

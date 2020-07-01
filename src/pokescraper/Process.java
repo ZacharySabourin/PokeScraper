@@ -1,10 +1,11 @@
 package pokescraper;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
-import pokescraper.web.WebScraper;
+import pokescraper.pokedex.Pokedex;
 
 public class Process 
 {
@@ -14,14 +15,16 @@ public class Process
 		{
 			long start = System.currentTimeMillis();
 			
-			WebScraper scraper = new WebScraper();
-			scraper.getAllPokemonfromWeb();
+			Pokedex pokedex = new Pokedex();
+			pokedex.loadPokemonIntoDex();
+			pokedex.uploadAllAbilitiesToDb();
+			pokedex.upLoadAllPokemonToDb();
 			
 			long end = System.currentTimeMillis();
 			long elapsedTime = end - start;
 			System.out.println("ELAPSED TIME : " + elapsedTime + "ms");
 		} 
-		catch (FailingHttpStatusCodeException | IOException e)
+		catch (FailingHttpStatusCodeException | IOException | InterruptedException | ClassNotFoundException | SQLException e)
 		{
 			e.printStackTrace();
 		}

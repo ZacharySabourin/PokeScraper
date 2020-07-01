@@ -14,7 +14,7 @@ public class DbManager
 	
 	public DbManager()
 	{
-		connectionURL = "jdbc:mysql://localhost:3306/PokeDex";
+		connectionURL = "jdbc:mysql://localhost:3306/pokedex_dev";
 		username = "root";
 		password = "root";
 		dbConnection = null;
@@ -37,20 +37,14 @@ public class DbManager
 	
 	public void write(String query) throws SQLException
 	{
-		try
-		{
-			Statement statement = dbConnection.createStatement();
-			statement.executeQuery(query);
-			dbConnection.commit();
-		}
-		catch(SQLException ex)
-		{
-			
-		}
-		finally
-		{
-			if(!isClosed())
-				closeConnection();
-		}		
+		try(Statement statement = dbConnection.createStatement())  
+		{	
+			statement.executeUpdate(query);		
+		}	
 	}
+	
+//	public Map<String> read(String query)
+//	{
+//		
+//	}
 }

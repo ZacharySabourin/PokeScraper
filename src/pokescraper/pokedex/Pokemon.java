@@ -33,54 +33,31 @@ public class Pokemon
 	public String toString()
 	{
 		StringBuffer buffer = new StringBuffer(250);
-		buffer.append(nationalDexNo);
-		buffer.append(" - ");
-		buffer.append(name);
-		buffer.append("\n");
-		buffer.append(height);
-		buffer.append(" - ");
-		buffer.append(weight);
-		buffer.append(" - ");
-		buffer.append(category);		
-		
-		for(String gender : genders)
-		{
-			buffer.append(" - ");
-			buffer.append(gender);
-		}
+		buffer.append(nationalDexNo + " - " + name + "\n" + height + " - " + weight + " - " + category);
+
+		for(String gender : genders)		
+			buffer.append(" - " + gender);
 		
 		buffer.append("/n");
 		
-		for(String ability : abilities)
-		{			
-			buffer.append(ability);
-			buffer.append(" - ");
-		}
+		for(String ability : abilities)				
+			buffer.append(ability + " - ");
 			
 		buffer.append("/n");
 		
 		for(String type : types)
-		{
-			buffer.append(type);
-			buffer.append(" - ");
-		}
-		
+			buffer.append(type + " - ");
+
 		buffer.append("\n");
 		
 		for(String weakness : weaknesses)
-		{
-			buffer.append(weakness);
-			buffer.append(" - ");
-		}
+			buffer.append(weakness + "  - ");
 			
 		buffer.append("\n");
 		
 		for(String description : descriptions)
-		{
-			buffer.append(description);
-			buffer.append("\n");
-		}
-				
+			buffer.append(description + "\n");
+			
 		return buffer.toString();
 	}
 	

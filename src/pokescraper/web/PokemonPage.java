@@ -25,7 +25,12 @@ public class PokemonPage extends WebPage
 	protected String getHeightElement()
 	{
 		String heightXPath = "//div[@class='column-7']/ul[1]/li[1]/span[@class='attribute-value']";	
-		return getSingleElementAsText(heightXPath);
+		String height = getSingleElementAsText(heightXPath);
+		
+		height = height.replace("'", "ft. ");
+		height = height.replace("\"", "in.");
+		
+		return height;
 	}
 	
 	protected String getWeightElement()
@@ -42,8 +47,16 @@ public class PokemonPage extends WebPage
 	
 	protected List<String> getAbilityElements()
 	{
-		String abilitiesXPath = "//ul[@class='attribute-list']";
-		return getMultipleElementsAsText(abilitiesXPath);
+		List<String> abilities = new ArrayList<String>();
+
+		for(int i = 1; i <= 3; i++)
+		{
+			String abilityXPath = "//ul[@class='attribute-list']/li[" + i + "]/a/span";
+			if(elementIsValid(abilityXPath))
+				abilities.add(getSingleElementAsText(abilityXPath));
+		}
+					
+		return abilities;
 	}
 	
 	protected List<String> getTypeElements()
@@ -66,7 +79,7 @@ public class PokemonPage extends WebPage
 	
 	protected List<String> getGenderElements()
 	{
-		List<String> genderInfo = new ArrayList<String>(2);
+		List<String> genderInfo = new ArrayList<String>();
 			
 		if(hasMaleGender())
 			genderInfo.add("Male"); 
