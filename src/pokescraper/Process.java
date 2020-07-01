@@ -16,9 +16,9 @@ public class Process
 			long start = System.currentTimeMillis();
 			
 			Pokedex pokedex = new Pokedex();
+			
 			pokedex.loadPokemonIntoDex();
-			pokedex.uploadAllAbilitiesToDb();
-			pokedex.upLoadAllPokemonToDb();
+			pokedex.upLoadAllInfo();
 			
 			long end = System.currentTimeMillis();
 			long elapsedTime = end - start;

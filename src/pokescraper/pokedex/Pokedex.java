@@ -37,46 +37,22 @@ public class Pokedex
 		pokemonList = scraper.getAllPokemonfromWeb();
 	}
 	
-	public void upLoadAllPokemonToDb() throws ClassNotFoundException, SQLException
+	public void upLoadAllInfo() throws ClassNotFoundException, SQLException
 	{
 		dbManager.establishConnection();
+		
+		uploadAllAbilitiesToDb();
 		
 		while(!pokemonList.isEmpty())
-			uploadSinglePokemonToDb(pokemonList.poll());
+			dbManager.writePokemon(pokemonList.poll());
 		
 		dbManager.closeConnection();
 	}
 	
-	private void uploadSinglePokemonToDb(Pokemon pokemon) throws SQLException
-	{
-		StringBuffer query = new StringBuffer(300);
-		
-		query.append("INSERT INTO POKEMON ("
-				+ "dex_no, pokemon_name, pokemon_height, pokemon_weight, "
-				+ "pokemon_category, pokemon_gender_one, pokemon_ability_one, pokemon_type_one, "
-				+ "pokemon_description_one, pokemon_description_two) "
-				+ "VALUES (");
-		
-		query.append("" + pokemon.getNationalDexNo() + ", '" + pokemon.getName() + "', '" + pokemon.getHeight() + "', '");
-		query.append(pokemon.getWeight() + "', '" + pokemon.getCategory() + "', ");
-		query.append("'NA', 1");
-		
-		for(String desc : pokemon.getDescriptions())
-			query.append(", '" + desc + "'");
-		
-		query.append(")");
-		
-		dbManager.write(query.toString());
-	}
-	
-	public void uploadAllAbilitiesToDb() throws ClassNotFoundException, SQLException
+	private void uploadAllAbilitiesToDb() throws SQLException
 	{		
-		dbManager.establishConnection();
-		
 		for(String ability : getAllAbilities())
-			uploadPokemonAbility(ability);
-		
-		dbManager.closeConnection();
+			dbManager.writeAbility(ability);
 	}
 	
 	private Set<String> getAllAbilities()
@@ -88,11 +64,5 @@ public class Pokedex
 				pokemonAbilities.add(ability);
 		
 		return pokemonAbilities;
-	}
-	
-	private void uploadPokemonAbility(String ability) throws SQLException
-	{
-		String query = "INSERT INTO ABILITIES (ability_name) VALUES ('" + ability +"')";
-		dbManager.write(query);
 	}
 }
