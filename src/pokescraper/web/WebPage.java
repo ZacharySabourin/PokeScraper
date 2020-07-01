@@ -15,12 +15,16 @@ public class WebPage
 		this.page = page;
 	}
 
-	protected List<String> getMultipleElementsAsText(String xPath)
+	protected List<String> getMultipleElementsAsText(String start, String end, int size)
 	{					
 		List<String> stringList = new ArrayList<String>();
 		
-		for(HtmlElement element : getMultipleElements(xPath))			
-			stringList.add(element.asText());
+		for(int i = 0; i < size; i ++)
+		{
+			String xPath = start + (i + 1) + end;
+			if(elementIsValid(xPath))
+				stringList.add(getSingleElementAsText(xPath));
+		}
 								
 		return stringList;
 	}

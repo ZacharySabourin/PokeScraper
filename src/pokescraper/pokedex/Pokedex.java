@@ -37,25 +37,37 @@ public class Pokedex
 		pokemonList = scraper.getAllPokemonfromWeb();
 	}
 	
-	public void upLoadAllInfo() throws ClassNotFoundException, SQLException
+	public void populateAllTables() throws ClassNotFoundException, SQLException
 	{
 		dbManager.establishConnection();
 		
-		uploadAllAbilitiesToDb();
-		
-		while(!pokemonList.isEmpty())
-			dbManager.writePokemon(pokemonList.poll());
+		populateAbilitiesTable();
+		populatePokemonTable();		
 		
 		dbManager.closeConnection();
 	}
 	
-	private void uploadAllAbilitiesToDb() throws SQLException
+	private void populateAbilitiesTable() throws SQLException
 	{		
-		for(String ability : getAllAbilities())
-			dbManager.writeAbility(ability);
+		for(String ability : siftForUniqueAbilities())
+			dbManager.writeIntoAbilityTable(ability);
 	}
 	
-	private Set<String> getAllAbilities()
+	private void populatePokemonTable() throws SQLException
+	{
+		while(!pokemonList.isEmpty())
+			uploadAllPokemonFields(pokemonList.poll());
+	}
+	
+	private void uploadAllPokemonFields(Pokemon pokemon) throws SQLException
+	{
+		//dbManager.writePokemon(pokemon);
+		//dbManager.writePokemonAbilities(pokemon);
+		dbManager.writePokemonTypes(pokemon);
+		//dbManager.writePokemonWeaknesses(pokemon);
+	}
+		
+	private Set<String> siftForUniqueAbilities()
 	{
 		Set<String> pokemonAbilities = new HashSet<String>(260);
 		
@@ -64,5 +76,5 @@ public class Pokedex
 				pokemonAbilities.add(ability);
 		
 		return pokemonAbilities;
-	}
+	}	
 }

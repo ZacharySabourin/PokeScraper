@@ -18,7 +18,7 @@ public class Process
 			Pokedex pokedex = new Pokedex();
 			
 			pokedex.loadPokemonIntoDex();
-			pokedex.upLoadAllInfo();
+			pokedex.populateAllTables();
 			
 			long end = System.currentTimeMillis();
 			long elapsedTime = end - start;

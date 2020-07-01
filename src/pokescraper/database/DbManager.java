@@ -3,8 +3,15 @@ package pokescraper.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import pokescraper.pokedex.ElementType;
 import pokescraper.pokedex.Pokemon;
 
 public class DbManager 
@@ -29,19 +36,15 @@ public class DbManager
 	
 	public void closeConnection() throws SQLException
 	{
-		dbConnection.close();
+		if(dbConnection != null)
+			dbConnection.close();
 	}
 	
-	public boolean isClosed() throws SQLException
+	public void writeIntoAbilityTable(String ability) throws SQLException
 	{
-		return dbConnection.isClosed();
-	}	
-	
-	public void writeAbility(String ability) throws SQLException
-	{
-		String query = "INSERT INTO ABILITIES (ability_name) VALUES (?)";
+		String insertSQL = "INSERT INTO abilities (ability_name) VALUES (?)";
 		
-		try(PreparedStatement statement = dbConnection.prepareStatement(query))  
+		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))  
 		{	
 			statement.setString(1, ability);
 			statement.execute();	
@@ -50,22 +53,115 @@ public class DbManager
 	
 	public void writePokemon(Pokemon pokemon) throws SQLException
 	{
-		String query = "INSERT INTO POKEMON (dex_no, pokemon_name, pokemon_height, pokemon_weight, pokemon_category) "
-				+ "VALUES (?, ?, ?, ?, ?)";
+		String insertSQL = "INSERT INTO pokemon "
+				+ "(dex_no, pokemon_name, pokemon_height, pokemon_weight, pokemon_category, pokemon_gender_one, "
+				+ "pokemon_gender_two, pokemon_description_one, pokemon_description_two) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		
-		try(PreparedStatement statement = dbConnection.prepareStatement(query))
+		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
 		{
 			statement.setInt(1, pokemon.getNationalDexNo());
 			statement.setString(2, pokemon.getName());
 			statement.setString(3, pokemon.getHeight());
 			statement.setString(4, pokemon.getWeight());
 			statement.setString(5, pokemon.getCategory());
+			statement.setString(6, pokemon.getGenders().get(0));			
+			statement.setString(7, checkStringForNull(pokemon.getGenders(), 1));
+			statement.setString(8, pokemon.getDescriptions().get(0));
+			statement.setString(9, pokemon.getDescriptions().get(1));
 			statement.execute();
 		}
 	}
+	
+	public void writePokemonAbilities(Pokemon pokemon) throws SQLException
+	{
+		String insertSQL = "INSERT INTO pokemon "
+				+ "(dex_no, pokemon_name, pokemon_height, pokemon_weight, pokemon_category, pokemon_gender_one, "
+				+ "pokemon_gender_two, pokemon_description_one, pokemon_description_two) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		
-//	public Map<String> read(String query)
+		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+		{
+			
+			statement.execute();
+		}
+	}
+	
+	public void writePokemonTypes(Pokemon pokemon) throws SQLException
+	{
+		String insertSQL = "UPDATE pokemon SET pokemon_type_one = ?, pokemon_type_two = ? WHERE dex_no = ?";
+		
+		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+		{
+			List<Integer> keys = getForeignKeys(pokemon.getTypes());
+			statement.setInt(1, keys.get(0));
+			statement.setInt(2, checkIntegerForNull(keys, 1));
+			statement.setInt(3, pokemon.getNationalDexNo());
+			statement.execute();
+		}
+	}
+	
+	public void writePokemonWeaknesses(Pokemon pokemon) throws SQLException
+	{
+		String insertSQL = "INSERT INTO pokemon "
+				+ "(pokemon_weakness_one, pokemon_weakness_two, pokemon_weakness_three, pokemon_weakness_four,"
+				+ "pokemon_weakness_five, pokemon_weakness_six, pokemon_weakness_seven) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+		
+		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+		{
+			List<Integer> keys = getForeignKeys(pokemon.getWeaknesses());
+			statement.setInt(1, checkIntegerForNull(keys, 1));
+			statement.setInt(2, checkIntegerForNull(keys, 2));
+			statement.setInt(3, checkIntegerForNull(keys, 3));
+			statement.setInt(4, checkIntegerForNull(keys, 4));
+			statement.setInt(5, checkIntegerForNull(keys, 5));
+			statement.setInt(6, checkIntegerForNull(keys, 6));
+			statement.setInt(7, checkIntegerForNull(keys, 7));
+			statement.execute();
+		}
+	}
+	
+	private List<Integer> getForeignKeys(List<String> attributes)
+	{
+		List<Integer> foreignKeys = new ArrayList<Integer>();
+		
+		for(String attribute : attributes)
+			for(ElementType element : ElementType.values())
+				if(element.name().equalsIgnoreCase(attribute))
+					foreignKeys.add(element.ordinal() + 1);
+		
+		return foreignKeys;
+	}
+	
+	private String checkStringForNull(List<String> list, int index)
+	{
+		if(list.size() > index)
+			return list.get(index);
+		
+		return null;
+	}	
+	
+	private int checkIntegerForNull(List<Integer> list, int index)
+	{
+		if(list.size() > index)
+			return list.get(index);
+		
+		return 0;
+	}
+	
+//	public Map<Integer, String> getMapOfAbilities() throws SQLException
 //	{
+//		String query = "SELECT ability_id, ability_name FROM abilities";
+//		Map<Integer, String> map = new HashMap<Integer, String>();
 //		
+//		try(Statement statement = dbConnection.createStatement(); 
+//				ResultSet result = statement.executeQuery(query);)
+//		{
+//			while(result.next())
+//				map.put(result.getInt(1), result.getString(2));
+//		}
+//			
+//		return map;
 //	}
 }

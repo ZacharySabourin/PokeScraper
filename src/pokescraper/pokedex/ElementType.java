@@ -1,6 +1,6 @@
 package pokescraper.pokedex;
 
-enum ElementType 
+public enum ElementType 
 {
 	NORMAL,
 	FIGHTING,

@@ -30,7 +30,7 @@ public class WebScraper
 		Deque<String> paths = getPokemonPaths();		
 		while(!paths.isEmpty())
 			if(pokemonList.offer(getSinglePokemonFromWeb(paths.poll())))
-				System.out.println("ADDED : " + pokemonList.peekLast().getNationalDexNo() + " - " + pokemonList.peekLast().getName());
+				System.out.println("SCRAPED : " + pokemonList.peekLast().getNationalDexNo() + " - " + pokemonList.peekLast().getName());
 					
 		client.close();
 		

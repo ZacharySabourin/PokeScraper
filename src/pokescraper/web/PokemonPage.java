@@ -46,35 +46,31 @@ public class PokemonPage extends WebPage
 	}
 	
 	protected List<String> getAbilityElements()
-	{
-		List<String> abilities = new ArrayList<String>();
-
-		for(int i = 1; i <= 3; i++)
-		{
-			String abilityXPath = "//ul[@class='attribute-list']/li[" + i + "]/a/span";
-			if(elementIsValid(abilityXPath))
-				abilities.add(getSingleElementAsText(abilityXPath));
-		}
-					
-		return abilities;
+	{		
+		return getMultipleElementsAsText("//ul[@class='attribute-list']/li[", "]/a/span", 3);
 	}
 	
 	protected List<String> getTypeElements()
 	{
-		String typesXPath = "//div[@class='dtm-type']//a";
-		return getMultipleElementsAsText(typesXPath);
+		return getMultipleElementsAsText("//div[@class='dtm-type']/ul/li[", "]/a", 2);
 	}
 	
 	protected List<String> getWeaknessElements()
 	{
-		String weaknessesXPath = "//div[@class='dtm-weaknesses']/ul/li/a";
-		return getMultipleElementsAsText(weaknessesXPath);
+		return getMultipleElementsAsText("//div[@class='dtm-weaknesses']/ul/li[", "]/a/span", 7);
 	}
 	
 	protected List<String> getDescriptionElements()
 	{
-		String descriptionsXPath = "//div[@class='version-descriptions active']";
-		return getMultipleElementsAsText(descriptionsXPath);
+		List<String> descriptions = new ArrayList<String>(2);
+		
+		String versionXXPath = "//div[@class='version-descriptions active']/p[1]";
+		descriptions.add(getSingleElementAsText(versionXXPath));
+		
+		String versionYXPath = "//div[@class='version-descriptions active']/p[2]";
+		descriptions.add(getSingleElementAsText(versionYXPath));
+		
+		return descriptions;
 	}
 	
 	protected List<String> getGenderElements()
@@ -110,13 +106,13 @@ public class PokemonPage extends WebPage
 	
 	private boolean hasMaleGender()
 	{
-		String maleXPath = "//div[@class='column-7']/ul/li[3]/span[@class='attribute-value']/i[@class='icon icon_male_symbol']";
+		String maleXPath = "//i[@class='icon icon_male_symbol']";
 		return elementIsValid(maleXPath);
 	}
 	
 	private boolean hasFemaleGender()
 	{
-		String femaleXPath = "//div[@class='column-7']/ul/li[3]/span[@class='attribute-value']/i[@class='icon icon_female_symbol']";
+		String femaleXPath = "//i[@class='icon icon_female_symbol']";
 		return elementIsValid(femaleXPath);
 	}
 }
