@@ -25,7 +25,7 @@ public class WebScraper
 	{
 		disableCssAndJavaScript();
 		
-		Deque<Pokemon> pokemonList = new ArrayDeque<Pokemon>(890);			
+		Deque<Pokemon> pokemonList = new ArrayDeque<Pokemon>(892);			
 		
 		Deque<String> paths = getPokemonPaths();		
 		while(!paths.isEmpty())

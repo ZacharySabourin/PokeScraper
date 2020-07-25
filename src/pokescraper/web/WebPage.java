@@ -27,7 +27,7 @@ public class WebPage
 		}
 								
 		return stringList;
-	}
+	}	
 	
 	protected String getSingleElementAsText(String xPath)
 	{

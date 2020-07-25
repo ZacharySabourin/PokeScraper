@@ -61,7 +61,7 @@ public class Pokedex
 	
 	private void uploadAllPokemonFields(Pokemon pokemon) throws SQLException
 	{
-		//dbManager.writePokemon(pokemon);
+		dbManager.writePokemon(pokemon);
 		//dbManager.writePokemonAbilities(pokemon);
 		dbManager.writePokemonTypes(pokemon);
 		//dbManager.writePokemonWeaknesses(pokemon);

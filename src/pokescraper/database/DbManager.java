@@ -3,13 +3,10 @@ package pokescraper.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import pokescraper.pokedex.ElementType;
 import pokescraper.pokedex.Pokemon;
@@ -73,19 +70,16 @@ public class DbManager
 		}
 	}
 	
-	public void writePokemonAbilities(Pokemon pokemon) throws SQLException
-	{
-		String insertSQL = "INSERT INTO pokemon "
-				+ "(dex_no, pokemon_name, pokemon_height, pokemon_weight, pokemon_category, pokemon_gender_one, "
-				+ "pokemon_gender_two, pokemon_description_one, pokemon_description_two) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		
-		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
-		{
-			
-			statement.execute();
-		}
-	}
+//	public void writePokemonAbilities(Pokemon pokemon) throws SQLException
+//	{
+//		String insertSQL = "";
+//		
+//		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+//		{
+//			
+//			statement.execute();
+//		}
+//	}
 	
 	public void writePokemonTypes(Pokemon pokemon) throws SQLException
 	{
@@ -93,34 +87,49 @@ public class DbManager
 		
 		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
 		{
-			List<Integer> keys = getForeignKeys(pokemon.getTypes());
-			statement.setInt(1, keys.get(0));
-			statement.setInt(2, checkIntegerForNull(keys, 1));
+			List<Integer> fKeys = getForeignKeys(pokemon.getTypes());
+			
+			statement.setInt(1, fKeys.get(0));
+			
+			if(fKeys.size() == 2)			
+				statement.setInt(2, fKeys.get(1));
+			
+			else
+				statement.setNull(2, Types.NULL);
+					
 			statement.setInt(3, pokemon.getNationalDexNo());
 			statement.execute();
 		}
 	}
 	
-	public void writePokemonWeaknesses(Pokemon pokemon) throws SQLException
-	{
-		String insertSQL = "INSERT INTO pokemon "
-				+ "(pokemon_weakness_one, pokemon_weakness_two, pokemon_weakness_three, pokemon_weakness_four,"
-				+ "pokemon_weakness_five, pokemon_weakness_six, pokemon_weakness_seven) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
-		
-		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
-		{
-			List<Integer> keys = getForeignKeys(pokemon.getWeaknesses());
-			statement.setInt(1, checkIntegerForNull(keys, 1));
-			statement.setInt(2, checkIntegerForNull(keys, 2));
-			statement.setInt(3, checkIntegerForNull(keys, 3));
-			statement.setInt(4, checkIntegerForNull(keys, 4));
-			statement.setInt(5, checkIntegerForNull(keys, 5));
-			statement.setInt(6, checkIntegerForNull(keys, 6));
-			statement.setInt(7, checkIntegerForNull(keys, 7));
-			statement.execute();
-		}
-	}
+//	public void writePokemonWeaknesses(Pokemon pokemon) throws SQLException
+//	{
+//		String insertSQL = "INSERT INTO pokemon "
+//				+ "(pokemon_weakness_one, pokemon_weakness_two, pokemon_weakness_three, pokemon_weakness_four,"
+//				+ "pokemon_weakness_five, pokemon_weakness_six, pokemon_weakness_seven) "
+//				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+//		
+//		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+//		{
+//			List<Integer> keys = getForeignKeys(pokemon.getWeaknesses());
+//			
+//			for(int i = 0; i < 7; i++)
+//			{
+//				
+//			}
+//			
+//			
+//			
+//			statement.setInt(1, checkIntegerForNull(keys, 1));
+//			statement.setInt(2, checkIntegerForNull(keys, 2));
+//			statement.setInt(3, checkIntegerForNull(keys, 3));
+//			statement.setInt(4, checkIntegerForNull(keys, 4));
+//			statement.setInt(5, checkIntegerForNull(keys, 5));
+//			statement.setInt(6, checkIntegerForNull(keys, 6));
+//			statement.setInt(7, checkIntegerForNull(keys, 7));
+//			statement.execute();
+//		}
+//	}
 	
 	private List<Integer> getForeignKeys(List<String> attributes)
 	{
@@ -141,14 +150,6 @@ public class DbManager
 		
 		return null;
 	}	
-	
-	private int checkIntegerForNull(List<Integer> list, int index)
-	{
-		if(list.size() > index)
-			return list.get(index);
-		
-		return 0;
-	}
 	
 //	public Map<Integer, String> getMapOfAbilities() throws SQLException
 //	{
