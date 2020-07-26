@@ -85,51 +85,35 @@ public class DbManager
 	{
 		String insertSQL = "UPDATE pokemon SET pokemon_type_one = ?, pokemon_type_two = ? WHERE dex_no = ?";
 		
+		fillAndExecuteStatement(insertSQL, getForeignKeys(pokemon.getTypes()), 2, pokemon.getNationalDexNo());
+	}
+	
+	public void writePokemonWeaknesses(Pokemon pokemon) throws SQLException
+	{
+		String insertSQL = "UPDATE pokemon SET pokemon_weakness_one = ?, pokemon_weakness_two = ?, pokemon_weakness_three = ?,"
+				+ " pokemon_weakness_four = ?, pokemon_weakness_five = ?, pokemon_weakness_six = ?, pokemon_weakness_seven = ?"
+				+ " WHERE dex_no = ?";
+		
+		fillAndExecuteStatement(insertSQL, getForeignKeys(pokemon.getWeaknesses()), 7, pokemon.getNationalDexNo());		
+	}
+	
+	private void fillAndExecuteStatement(String insertSQL, List<Integer> fKeys, int maxKeys, int dexNo) throws SQLException
+	{
 		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
 		{
-			List<Integer> fKeys = getForeignKeys(pokemon.getTypes());
+			for(int i = 0; i < maxKeys; i++)
+			{
+				if(fKeys.size() >= (i + 1))			
+					statement.setInt(i + 1, fKeys.get(i));
+				
+				else
+					statement.setNull(i + 1, Types.NULL);
+			}
 			
-			statement.setInt(1, fKeys.get(0));
-			
-			if(fKeys.size() == 2)			
-				statement.setInt(2, fKeys.get(1));
-			
-			else
-				statement.setNull(2, Types.NULL);
-					
-			statement.setInt(3, pokemon.getNationalDexNo());
+			statement.setInt(maxKeys + 1, dexNo);
 			statement.execute();
 		}
 	}
-	
-//	public void writePokemonWeaknesses(Pokemon pokemon) throws SQLException
-//	{
-//		String insertSQL = "INSERT INTO pokemon "
-//				+ "(pokemon_weakness_one, pokemon_weakness_two, pokemon_weakness_three, pokemon_weakness_four,"
-//				+ "pokemon_weakness_five, pokemon_weakness_six, pokemon_weakness_seven) "
-//				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
-//		
-//		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
-//		{
-//			List<Integer> keys = getForeignKeys(pokemon.getWeaknesses());
-//			
-//			for(int i = 0; i < 7; i++)
-//			{
-//				
-//			}
-//			
-//			
-//			
-//			statement.setInt(1, checkIntegerForNull(keys, 1));
-//			statement.setInt(2, checkIntegerForNull(keys, 2));
-//			statement.setInt(3, checkIntegerForNull(keys, 3));
-//			statement.setInt(4, checkIntegerForNull(keys, 4));
-//			statement.setInt(5, checkIntegerForNull(keys, 5));
-//			statement.setInt(6, checkIntegerForNull(keys, 6));
-//			statement.setInt(7, checkIntegerForNull(keys, 7));
-//			statement.execute();
-//		}
-//	}
 	
 	private List<Integer> getForeignKeys(List<String> attributes)
 	{

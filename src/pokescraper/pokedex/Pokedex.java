@@ -56,15 +56,15 @@ public class Pokedex
 	private void populatePokemonTable() throws SQLException
 	{
 		while(!pokemonList.isEmpty())
-			uploadAllPokemonFields(pokemonList.poll());
+			writeAllPokemonFields(pokemonList.poll());
 	}
 	
-	private void uploadAllPokemonFields(Pokemon pokemon) throws SQLException
+	private void writeAllPokemonFields(Pokemon pokemon) throws SQLException
 	{
 		dbManager.writePokemon(pokemon);
 		//dbManager.writePokemonAbilities(pokemon);
 		dbManager.writePokemonTypes(pokemon);
-		//dbManager.writePokemonWeaknesses(pokemon);
+		dbManager.writePokemonWeaknesses(pokemon);
 	}
 		
 	private Set<String> siftForUniqueAbilities()
