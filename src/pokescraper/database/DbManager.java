@@ -3,7 +3,9 @@ package pokescraper.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,18 @@ public class DbManager
 			dbConnection.close();
 	}
 	
-	public void writeIntoAbilityTable(String ability) throws SQLException
+	public void writeIntoTypesTable(String type) throws SQLException
+	{
+		String insertSQL = "INSERT INTO types (type_name) VALUES (?)";
+		
+		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+		{
+			statement.setString(1, type);
+			statement.execute();
+		}
+	}	
+	
+	public void writeIntoAbilitiesTable(String ability) throws SQLException
 	{
 		String insertSQL = "INSERT INTO abilities (ability_name) VALUES (?)";
 		
@@ -50,10 +63,10 @@ public class DbManager
 	
 	public void writePokemon(Pokemon pokemon) throws SQLException
 	{
-		String insertSQL = "INSERT INTO pokemon "
-				+ "(dex_no, pokemon_name, pokemon_height, pokemon_weight, pokemon_category, pokemon_gender_one, "
-				+ "pokemon_gender_two, pokemon_description_one, pokemon_description_two) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String insertSQL = "INSERT INTO pokemon"
+				+ " (dex_no, pokemon_name, pokemon_height, pokemon_weight, pokemon_category, pokemon_gender_one,"
+				+ " pokemon_gender_two, pokemon_description_one, pokemon_description_two)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
 		{
@@ -70,36 +83,33 @@ public class DbManager
 		}
 	}
 	
-//	public void writePokemonAbilities(Pokemon pokemon) throws SQLException
-//	{
-//		String insertSQL = "";
-//		
-//		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
-//		{
-//			
-//			statement.execute();
-//		}
-//	}
+	public void writePokemonAbilities(Pokemon pokemon) throws SQLException
+	{
+		String updateSQL = "UPDATE pokemon SET pokemon_ability_one = ?, pokemon_ability_two = ?, pokemon_ability_three = ? "
+				+ "WHERE dex_no = ?";
+		
+		executeForeignKeyStatement(updateSQL, getAbilitiesForeignKeys(pokemon.getAbilities()), 3, pokemon.getNationalDexNo());
+	}
 	
 	public void writePokemonTypes(Pokemon pokemon) throws SQLException
 	{
-		String insertSQL = "UPDATE pokemon SET pokemon_type_one = ?, pokemon_type_two = ? WHERE dex_no = ?";
+		String updateSQL = "UPDATE pokemon SET pokemon_type_one = ?, pokemon_type_two = ? WHERE dex_no = ?";
 		
-		fillAndExecuteStatement(insertSQL, getForeignKeys(pokemon.getTypes()), 2, pokemon.getNationalDexNo());
+		executeForeignKeyStatement(updateSQL, getTypeForeignKeys(pokemon.getTypes()), 2, pokemon.getNationalDexNo());
 	}
 	
 	public void writePokemonWeaknesses(Pokemon pokemon) throws SQLException
 	{
-		String insertSQL = "UPDATE pokemon SET pokemon_weakness_one = ?, pokemon_weakness_two = ?, pokemon_weakness_three = ?,"
+		String updateSQL = "UPDATE pokemon SET pokemon_weakness_one = ?, pokemon_weakness_two = ?, pokemon_weakness_three = ?,"
 				+ " pokemon_weakness_four = ?, pokemon_weakness_five = ?, pokemon_weakness_six = ?, pokemon_weakness_seven = ?"
 				+ " WHERE dex_no = ?";
 		
-		fillAndExecuteStatement(insertSQL, getForeignKeys(pokemon.getWeaknesses()), 7, pokemon.getNationalDexNo());		
+		executeForeignKeyStatement(updateSQL, getTypeForeignKeys(pokemon.getWeaknesses()), 7, pokemon.getNationalDexNo());		
 	}
 	
-	private void fillAndExecuteStatement(String insertSQL, List<Integer> fKeys, int maxKeys, int dexNo) throws SQLException
+	private void executeForeignKeyStatement(String updateSQL, List<Integer> fKeys, int maxKeys, int dexNo) throws SQLException
 	{
-		try(PreparedStatement statement = dbConnection.prepareStatement(insertSQL))
+		try(PreparedStatement statement = dbConnection.prepareStatement(updateSQL))
 		{
 			for(int i = 0; i < maxKeys; i++)
 			{
@@ -115,16 +125,34 @@ public class DbManager
 		}
 	}
 	
-	private List<Integer> getForeignKeys(List<String> attributes)
+	private List<Integer> getAbilitiesForeignKeys(List<String> abilities) throws SQLException
 	{
-		List<Integer> foreignKeys = new ArrayList<Integer>();
+		String query = "SELECT ability_id, ability_name FROM abilities";
+
+		List<Integer> fKeys = new ArrayList<Integer>();
+		
+		try(Statement statement = dbConnection.createStatement(); 
+				ResultSet result = statement.executeQuery(query);)
+		{
+			while(result.next())		
+				for(String ability : abilities)				
+					if(ability.equalsIgnoreCase(result.getString(2)))
+						fKeys.add(result.getInt(1));
+			
+			return fKeys;
+		}
+	}
+	
+	private List<Integer> getTypeForeignKeys(List<String> attributes)
+	{
+		List<Integer> fKeys = new ArrayList<Integer>();
 		
 		for(String attribute : attributes)
 			for(ElementType element : ElementType.values())
 				if(element.name().equalsIgnoreCase(attribute))
-					foreignKeys.add(element.ordinal() + 1);
+					fKeys.add(element.ordinal() + 1);
 		
-		return foreignKeys;
+		return fKeys;
 	}
 	
 	private String checkStringForNull(List<String> list, int index)
@@ -134,19 +162,4 @@ public class DbManager
 		
 		return null;
 	}	
-	
-//	public Map<Integer, String> getMapOfAbilities() throws SQLException
-//	{
-//		String query = "SELECT ability_id, ability_name FROM abilities";
-//		Map<Integer, String> map = new HashMap<Integer, String>();
-//		
-//		try(Statement statement = dbConnection.createStatement(); 
-//				ResultSet result = statement.executeQuery(query);)
-//		{
-//			while(result.next())
-//				map.put(result.getInt(1), result.getString(2));
-//		}
-//			
-//		return map;
-//	}
 }

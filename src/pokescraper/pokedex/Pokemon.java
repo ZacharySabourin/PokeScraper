@@ -29,58 +29,6 @@ public class Pokemon
 		this.descriptions = null;
 	}
 	
-	@Override
-	public String toString()
-	{
-		StringBuffer buffer = new StringBuffer(250);
-		buffer.append(nationalDexNo + " - " + name + "\n" + height + " - " + weight + " - " + category);
-
-		for(String gender : genders)		
-			buffer.append(" - " + gender);
-		
-		buffer.append("/n");
-		
-		for(String ability : abilities)				
-			buffer.append(ability + " - ");
-			
-		buffer.append("/n");
-		
-		for(String type : types)
-			buffer.append(type + " - ");
-
-		buffer.append("\n");
-		
-		for(String weakness : weaknesses)
-			buffer.append(weakness + "  - ");
-			
-		buffer.append("\n");
-		
-		for(String description : descriptions)
-			buffer.append(description + "\n");
-			
-		return buffer.toString();
-	}
-	
-	public boolean isValid()
-	{
-		return 
-			(nationalDexNo != 0) &&
-			(name != null) &&
-			(height != null) &&
-			(weight != null) &&
-			(category != null) &&
-			(genders != null) &&
-			(abilities != null) &&
-			(types != null) &&
-			(weaknesses != null) &&
-			(descriptions != null);
-	}
-	
-	public boolean hasTwoTypes()
-	{
-		return (types.size() > 1);
-	}
-	
 	public int getNationalDexNo()
 	{
 		return nationalDexNo;

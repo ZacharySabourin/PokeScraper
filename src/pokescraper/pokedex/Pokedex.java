@@ -26,12 +26,6 @@ public class Pokedex
 		dbManager = new DbManager();
 	}
 	
-	@Override
-	public String toString()
-	{
-		return "";
-	}
-	
 	public void loadPokemonIntoDex() throws FailingHttpStatusCodeException, MalformedURLException, IOException, InterruptedException
 	{		
 		pokemonList = scraper.getAllPokemonfromWeb();
@@ -41,16 +35,23 @@ public class Pokedex
 	{
 		dbManager.establishConnection();
 		
+		populateTypesTable();
 		populateAbilitiesTable();
 		populatePokemonTable();		
 		
 		dbManager.closeConnection();
 	}
 	
+	private void populateTypesTable() throws SQLException
+	{
+		for(ElementType element : ElementType.values())
+			dbManager.writeIntoTypesTable(element.name());
+	}
+	
 	private void populateAbilitiesTable() throws SQLException
 	{		
 		for(String ability : siftForUniqueAbilities())
-			dbManager.writeIntoAbilityTable(ability);
+			dbManager.writeIntoAbilitiesTable(ability);
 	}
 	
 	private void populatePokemonTable() throws SQLException
@@ -62,7 +63,7 @@ public class Pokedex
 	private void writeAllPokemonFields(Pokemon pokemon) throws SQLException
 	{
 		dbManager.writePokemon(pokemon);
-		//dbManager.writePokemonAbilities(pokemon);
+		dbManager.writePokemonAbilities(pokemon);
 		dbManager.writePokemonTypes(pokemon);
 		dbManager.writePokemonWeaknesses(pokemon);
 	}

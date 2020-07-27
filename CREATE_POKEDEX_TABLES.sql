@@ -67,24 +67,3 @@ CREATE TABLE IF NOT EXISTS POKEMON
     FOREIGN KEY (pokemon_weakness_seven)
         REFERENCES TYPES (type_id)
 );
-
-
--- INSERT POKEMON TYPES
-INSERT INTO types (type_name) VALUES ('NORMAL');
-INSERT INTO types (type_name) VALUES ('FIGHTING');
-INSERT INTO types (type_name) VALUES ('FLYING');
-INSERT INTO types (type_name) VALUES ('POISON');
-INSERT INTO types (type_name) VALUES ('GROUND');
-INSERT INTO types (type_name) VALUES ('ROCK');
-INSERT INTO types (type_name) VALUES ('BUG');
-INSERT INTO types (type_name) VALUES ('GHOST');
-INSERT INTO types (type_name) VALUES ('STEEL');
-INSERT INTO types (type_name) VALUES ('FIRE');
-INSERT INTO types (type_name) VALUES ('WATER');
-INSERT INTO types (type_name) VALUES ('GRASS');
-INSERT INTO types (type_name) VALUES ('ELECTRIC');
-INSERT INTO types (type_name) VALUES ('PSYCHIC');
-INSERT INTO types (type_name) VALUES ('ICE');
-INSERT INTO types (type_name) VALUES ('DRAGON');
-INSERT INTO types (type_name) VALUES ('DARK');
-INSERT INTO types (type_name) VALUES ('FAIRY');

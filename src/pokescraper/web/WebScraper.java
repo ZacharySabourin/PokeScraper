@@ -53,7 +53,8 @@ public class WebScraper
 	{
 		PokemonPage page = new PokemonPage(client.getPage(startUrl + path));
 		
-		Pokemon pokemon = new Pokemon();		
+		Pokemon pokemon = new Pokemon();	
+		
 		pokemon.setNationalDexNo(page.getDexNoElement());
 		pokemon.setName(page.getNameElement());
 		pokemon.setHeight(page.getHeightElement());

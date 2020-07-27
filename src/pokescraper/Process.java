@@ -12,17 +12,10 @@ public class Process
 	public static void main(String[] args)
 	{
 		try 
-		{
-			long start = System.currentTimeMillis();
-			
-			Pokedex pokedex = new Pokedex();
-			
+		{			
+			Pokedex pokedex = new Pokedex();			
 			pokedex.loadPokemonIntoDex();
-			pokedex.populateAllTables();
-			
-			long end = System.currentTimeMillis();
-			long elapsedTime = end - start;
-			System.out.println("ELAPSED TIME : " + elapsedTime + "ms");
+			pokedex.populateAllTables();			
 		} 
 		catch (FailingHttpStatusCodeException | IOException | InterruptedException | ClassNotFoundException | SQLException e)
 		{
