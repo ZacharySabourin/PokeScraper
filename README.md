@@ -8,4 +8,5 @@ What I Learned:
   - Practiced the "Single Responsibility Principal"
     - Worked on separating functionality to maintain readability and facilitate maintenance
   - Learned how to scrape a website
+  - Set up a simple server using MAMP
   - Practiced my ability to use a MySQL database
